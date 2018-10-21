@@ -5,6 +5,8 @@ import { SocketProvider } from 'socket.io-react';
 const socket = io();
 const root = document.querySelector('#game');
 
+
+
 ReactDOM.render(
   <SocketProvider socket={socket}>
     Hello world
