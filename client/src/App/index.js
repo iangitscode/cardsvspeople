@@ -3,8 +3,14 @@ import { connect } from 'react-redux';
 import { compose } from '../helpers';
 
 export default compose(
-  connect(({ room }) => ({ room })),
+  connect(({
+    app: { room },
+  }) => ({ room })),
   function App({ room }) {
-    return <div>Hello world</div>;
+    if (room) {
+      return <div>Find a room</div>;
+    } else {
+      return <div>I'm in a room called {room}</div>;
+    }
   }
 )
