@@ -9,7 +9,7 @@ module.exports = env => ({
   output: {
     path: path.resolve('.', 'public_html', 'dist'),
     publicPath: 'dist/',
-    filename: 'conartist.min.js',
+    filename: 'index.min.js',
   },
   module: {
     rules: [
