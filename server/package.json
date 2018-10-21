@@ -1,0 +1,11 @@
+{
+  "name": "space-teams",
+  "version": "1.0.0",
+  "description": "A clone of space teams!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
