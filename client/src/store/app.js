@@ -11,7 +11,7 @@ export const setRoom = room => ({ type: SET_ROOM, room });
 export default function appReducer(state = init(), action) {
   switch (action.type) {
   case SET_ROOM:
-    return { ...state, room };
+    return { ...state, room: action.room};
   default:
     return state;
   }

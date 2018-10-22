@@ -28,21 +28,23 @@ function createNewRoom() {
 }
 
 io.on('connection', function(socket){
-	socket.on('createRoom', () => {
+	socket.on('createRoom', (respond) => {
 		let roomName = createNewRoom();
 		socket.join(roomName);
-		socket.emit('receiveRoomName', roomName);
+		respond({status: "success", msg: roomName});
 		io.sockets.in(roomName).emit("saysomething", "hello everyone");
 	});
 	
-	socket.on('joinRoom', (roomName) => {
+	socket.on('joinRoom', (roomName, respond) => {
 		if (rooms.has(roomName)) {
 			socket.join(roomName);
 			io.sockets.in(roomName).emit("saysomething", "hello everyone");
 		} else {
-			socket.emit('wrongRoom', '');
+			respond({status: "error", msg: "wrong room"});
 		}
 	});
+
+	
 });
 
 server.listen(3000);

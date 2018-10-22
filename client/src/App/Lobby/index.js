@@ -25,8 +25,10 @@ export default compose(
     }
 
     createRoom() {
-      this.props.socket.emit('createRoom', roomName => {
-        this.props.setRoom(roomName);
+      this.props.socket.emit('createRoom', ({status, msg}) => {
+        if (status === 'success') {
+          this.props.setRoom(msg);
+        }
       });
     }
 
