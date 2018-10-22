@@ -1,13 +1,12 @@
 import React from 'react';
 import { socketConnect } from 'socket.io-react';
 import { connect } from 'react-redux';
-import { compose, socketHandlers } from '../../helpers';
+import { compose, dispatchers } from '../../helpers';
+import * as ducks from '../../store/app';
 
 export default compose(
+  connect(null, dispatchers(ducks)),
   socketConnect,
-  socketHandlers({
-    receiveRoomName: roomName => { console.log(roomName); },
-  }),
   class Lobby extends React.Component {
     constructor(props) {
       super(props);
@@ -26,7 +25,9 @@ export default compose(
     }
 
     createRoom() {
-      this.props.socket.emit('createRoom');
+      this.props.socket.emit('createRoom', roomName => {
+        this.props.setRoom(roomName);
+      });
     }
 
     render() {
