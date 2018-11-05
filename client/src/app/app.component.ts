@@ -6,5 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent {
-  title = 'Cards Vs People'
+  title = 'Cards Vs People';
+  private socket:SocketIOClient.Socket;
+  ngOnInit() {}
 }

@@ -43,8 +43,7 @@ io.on('connection', function(socket){
 			respond({status: "error", msg: "wrong room"});
 		}
 	});
-
-	
+	socket.emit('hi',"hello");
 });
 
 server.listen(3000);
