@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { LobbyComponent } from './lobby/lobby.component';
 import { FormsModule } from '@angular/forms';
 import { GameComponent } from './game/game.component';
+import { Globals } from './globals';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,7 @@ import { GameComponent } from './game/game.component';
     BrowserModule,
     FormsModule
   ],
-  providers: [SocketService],
+  providers: [SocketService, Globals],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

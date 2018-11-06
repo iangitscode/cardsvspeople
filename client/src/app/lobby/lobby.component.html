@@ -11,6 +11,9 @@
     </div>
   </div>
   <div class="current-room" *ngIf="isInRoom()">
-    Welcome to room {{roomName}}!
+    Welcome to room {{getRoomName()}}!
+  </div>
+  <div class="start-game button" (click)="startGame()" *ngIf="createdRoom()">
+    Start Game
   </div>
 </div>

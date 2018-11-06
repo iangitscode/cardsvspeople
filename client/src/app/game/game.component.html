@@ -1,5 +1,8 @@
 <div class="game-component">
-  <div class="card">
-    hi
+  <div class="handContainer">
+    <div class="card" *ngFor="let card of getHand() | async">
+      {{card.text}}
+    </div>
   </div>
+  
 </div>

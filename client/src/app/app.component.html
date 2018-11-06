@@ -1,5 +1,5 @@
 <div class="app-component">
-  <app-lobby></app-lobby>
-  <game></game>
+  <app-lobby *ngIf="isLobbyStage()"></app-lobby>
+  <game *ngIf="isGameStage()"></game>
 </div>
 
