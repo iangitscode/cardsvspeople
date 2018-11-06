@@ -7,6 +7,5 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Cards Vs People';
-  private socket:SocketIOClient.Socket;
   ngOnInit() {}
 }

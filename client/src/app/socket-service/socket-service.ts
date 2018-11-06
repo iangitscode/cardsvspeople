@@ -6,13 +6,10 @@ import * as io from 'socket.io-client';
 })
 export class SocketService {
   private socket:SocketIOClient.Socket;
-  
   constructor() { 
     this.socket = io('http://localhost:3000');
   }
-
   public getSocket():SocketIOClient.Socket {
     return this.socket;
-  } 
-
+  }
 }

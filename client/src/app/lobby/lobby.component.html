@@ -1,3 +1,16 @@
-<p>
-  lobby works!
-</p>
+<div class="lobby-component">
+  <div class="create-room button" (click)="createRoom()" *ngIf="!isInRoom()">
+    Create Room
+  </div>
+  <div class="join-room" *ngIf="!isInRoom()">
+    <form (submit)="joinRoom()">
+      <input [(ngModel)]="formInput" name="formInput">
+    </form>
+    <div class="join-room button" (click)="joinRoom()">
+      Join Room
+    </div>
+  </div>
+  <div class="current-room" *ngIf="isInRoom()">
+    Welcome to room {{roomName}}!
+  </div>
+</div>
