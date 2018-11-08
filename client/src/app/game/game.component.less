@@ -1,3 +1,54 @@
-.card {
-  border: 2px solid black;
+.game-component {
+  width: 100%;
+  .bottom-row {
+    position: absolute;
+    bottom: 0px;
+    display: flex;
+    align-items: flex-end;
+
+    .hand-container {
+      display: flex;
+      justify-content: center;
+      flex-basis: 90%;
+    }
+
+    .submit {
+      border: 1px solid black;
+      padding: 30px;
+      margin: 10px;
+      cursor: pointer;
+    }
+  }
+  .card {
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: Helvetica;
+    font-weight: bold;
+    font-size: 20px;
+    height: 300px;
+    width: 12%;
+    margin: 10px;
+    padding: 7px;
+
+    &.black {
+      color: white;
+      background-color: black;
+    }
+
+    &.white {
+      color: black;
+      background-color: white;
+      cursor: pointer;
+
+      transition: transform 0.3s;
+      &.selected {
+        transform: translateY(-50px);
+        background-color: #CCCCCC;
+      }
+
+      &:hover {
+        transform: translateY(-50px);
+      }
+    }
+  }
 }

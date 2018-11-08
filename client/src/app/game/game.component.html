@@ -1,8 +1,18 @@
 <div class="game-component">
-  <div class="handContainer">
-    <div class="card" *ngFor="let card of getHand() | async">
-      {{card.text}}
+  <div class="card black">
+    {{getCurrentBlackCardText() | async}}
+  </div>
+  <div class="bottom-row">
+    <div class="hand-container">
+      <div class="card white" 
+          *ngFor="let card of getHand() | async; index as i"
+          (click)="clickCard(i)"
+          [class.selected]="cardIsSelected(i)">
+        {{card.text}}
+      </div>
+    </div>
+    <div class="submit">
+        Submit
     </div>
   </div>
-  
 </div>
