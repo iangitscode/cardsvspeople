@@ -27,7 +27,7 @@ function createNewRoom() {
 function createPlayerInRoom(roomName, socketId) {
   const playerIdLen = 10;
 
-  if (games.has(roomName) == false) {
+  if (isValidRoomName(roomName) == false) {
     return;
   }
 
@@ -54,21 +54,25 @@ function generateRandomAlpha(n) {
 }
 
 function getGame(roomName) {
-  if (games.has(roomName)) {
+  if (isValidRoomName(roomName)) {
     return games.get(roomName);
   } else {
     return null;
   }
 }
 
-function isValidPlayerInRoom(roomName, playerId) {
-  return games.has(roomName) && games.get(roomName).hasPlayerWithId(playerId);
+function isValidRoomName(roomName) {
+  return games.has(roomName);
+}
+
+function isValidPlayerInRoom(playerId, roomName) {
+  return isValidRoomName(roomName) && games.get(roomName).hasPlayerWithId(playerId);
 }
 
 function getCurrentTurnPlayer(roomName) {
-  if (games.has(roomName)) {
+  if (isValidRoomName(roomName)) {
     return games.get(roomName).players[games.get(roomName).currentPlayerTurn];
   }
 }
 
-module.exports = {createNewRoom, createPlayerInRoom, games, isValidPlayerInRoom, getGame, getCurrentTurnPlayer};
+module.exports = {createNewRoom, createPlayerInRoom, games, isValidPlayerInRoom, getGame, getCurrentTurnPlayer, isValidRoomName};

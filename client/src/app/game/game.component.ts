@@ -3,6 +3,7 @@ import { SocketService } from '../socket-service/socket-service';
 import { Card } from './card';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { map } from "rxjs/operators";
+import { Globals } from "../globals";
 
 @Component({
   selector: 'game',
@@ -19,7 +20,8 @@ export class GameComponent {
 
   private selectedCards = []
 
-  constructor(private socketService: SocketService){}
+  constructor(private socketService: SocketService,
+              private globals: Globals){}
 
   ngOnInit() {
     this.socketService.getSocket().on('setHand', (data) => {
@@ -34,6 +36,12 @@ export class GameComponent {
       if (data.status == 'success') {
         this.currentBlackCard.next(new Card(data.msg));
         this.numSpaces.next(data.msg.pick);
+      }
+    });
+
+    this.socketService.getSocket().on('sendWhiteCardSelections', (data) => {
+      if (data.status == 'success') {
+        console.log(data);
       }
     });
   }
@@ -60,5 +68,9 @@ export class GameComponent {
 
   public cardIsSelected(index: Number): boolean {
     return this.selectedCards.includes(index);
+  }
+
+  public sendSelectedWhiteCard(): void {
+    this.socketService.getSocket().emit('sendWhiteCard', this.selectedCards, this.globals.playerId, this.globals.roomName);
   }
 }
