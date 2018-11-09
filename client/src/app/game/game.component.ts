@@ -12,11 +12,13 @@ import { Globals } from "../globals";
 })
 export class GameComponent {
   private hand: BehaviorSubject<Card[]> = new BehaviorSubject<Card[]>([]);
-  private numSpaces: BehaviorSubject<Number> = new BehaviorSubject<Number>(0);
+  private numSpaces: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private isMyTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private currentBlackCard: ReplaySubject<Card> = new ReplaySubject<Card>(1);
   private currentBlackCardText: Observable<string> = this.currentBlackCard.pipe(map((card: Card) => {
     return card.text.replace(/_/g,"___");
   }));
+  private whiteCardSubmissions: BehaviorSubject<Card[][]> = new BehaviorSubject<Card[][]>([]);
 
   private selectedCards = []
 
@@ -34,14 +36,24 @@ export class GameComponent {
 
     this.socketService.getSocket().on('setBlackCard', (data) => {
       if (data.status == 'success') {
-        this.currentBlackCard.next(new Card(data.msg));
-        this.numSpaces.next(data.msg.pick);
+        this.currentBlackCard.next(new Card(data.msg.card));
+        this.numSpaces.next(data.msg.card.pick);
       }
     });
 
     this.socketService.getSocket().on('sendWhiteCardSelections', (data) => {
       if (data.status == 'success') {
-        console.log(data);
+        this.whiteCardSubmissions.next(data.msg.map((cardsByPlayer) => {
+          return cardsByPlayer.cards.map((cardJSON) => {
+            return new Card(cardJSON);
+          });
+        }));
+      }
+    });
+
+    this.socketService.getSocket().on('setIsMyTurn', (data) => {
+      if (data.status == 'success') {
+        this.isMyTurn.next(data.msg);
       }
     });
   }
@@ -54,8 +66,8 @@ export class GameComponent {
     return this.currentBlackCardText;
   }
 
-  public clickCard(index: Number): void {
-    if (this.selectedCards.includes(index)) {
+  public clickCard(index: number): void {
+    if (this.selectedCards.includes(index) && this.isMyTurn.value == false) {
        // Remove the card from selectedCards
        this.selectedCards.splice(this.selectedCards.indexOf(index), 1);
     } else if (this.selectedCards.length == this.numSpaces.value) {
@@ -63,14 +75,26 @@ export class GameComponent {
     } else {
       this.selectedCards.push(index);
     }
-    console.log(this.selectedCards);
   }
 
-  public cardIsSelected(index: Number): boolean {
+  public cardIsSelected(index: number): boolean {
     return this.selectedCards.includes(index);
   }
 
   public sendSelectedWhiteCard(): void {
     this.socketService.getSocket().emit('sendWhiteCard', this.selectedCards, this.globals.playerId, this.globals.roomName);
+    this.selectedCards = [];
+  }
+
+  public isMyTurnObservable(): Observable<boolean> {
+    return this.isMyTurn;
+  }
+
+  public getWhiteCardSubmissions(): Observable<Card[][]> {
+    return this.whiteCardSubmissions;
+  }
+
+  public selectSubmission(index: number): void {
+    console.log(index);
   }
 }

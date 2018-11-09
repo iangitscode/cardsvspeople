@@ -30,11 +30,25 @@ function generateCard(isWhiteCard, roomName) {
     let cardNum = Math.floor(Math.random() * numCards);
     while ( roomManager.getGame(roomName).blackCardsUsed.has(cardNum) ||
             cardsJSON.black[cardNum].text.includes('\n') ||
-            cardsJSON.black[cardNum].text.includes('*')) {
+            cardsJSON.black[cardNum].text.includes('*')
+            || cardsJSON.black[cardNum].pick != 3) {
       cardNum = Math.floor(Math.random() * numCards);
     }
     roomManager.getGame(roomName).blackCardsUsed.add(cardNum);
     return cardNum;
+  }
+}
+
+function emitCurrentPlayerTurn(roomName) {
+  if (roomManager.isValidRoomName(roomName)) {
+    const currentPlayerTurn = roomManager.getGame(roomName).currentPlayerTurn;
+    for (let index in roomManager.getGame(roomName).players) {
+      let val = false;
+      if (index == currentPlayerTurn) {
+        val = true;
+      } 
+      nodeConstants.io.to(roomManager.getGame(roomName).players[index].socketId).emit('setIsMyTurn', {status: "success", msg: val});
+    }
   }
 }
 
@@ -48,7 +62,8 @@ function startTurn(playerId, roomName) {
       });
 
       const blackCard = generateCard(false, roomName);
-      nodeConstants.io.sockets.in(roomName).emit('setBlackCard', {status: "success", msg: cardsJSON.black[blackCard]});
+      nodeConstants.io.sockets.in(roomName).emit('setBlackCard', {status: "success", msg: {card: cardsJSON.black[blackCard]}});
+      emitCurrentPlayerTurn(roomName);
       roomManager.getGame(roomName).currentState = state.SUBMIT;
       roomManager.getGame(roomName).currentExpectedCards = cardsJSON.black[blackCard].pick;
   }
@@ -62,9 +77,6 @@ function receiveWhiteCard(selection, playerId, roomName) {
     roomManager.getGame(roomName).getPlayer(playerId).selection = selection.map((index) => {
       return roomManager.getGame(roomName).getPlayer(playerId).hand[index];
     });
-    console.log(roomManager.getGame(roomName));
-    // Move on to next stage of the game
-    console.log(roomManager.getGame(roomName).numPlayersWithSelection(),roomManager.getGame(roomName).players.length - 1);
     if (roomManager.getGame(roomName).numPlayersWithSelection() == roomManager.getGame(roomName).players.length - 1) {
       startWinnerSelection(roomName);
     }
@@ -73,8 +85,10 @@ function receiveWhiteCard(selection, playerId, roomName) {
 
 function startWinnerSelection(roomName) {
   roomManager.getGame(roomName).currentState = state.PICK;
-  console.log(convertCardId(roomManager.getGame(roomName).getAllPlayerSelection()));
-  nodeConstants.io.sockets.in(roomName).emit('sendWhiteCardSelections', {status: "success", msg: convertCardId(roomManager.getGame(roomName).getAllPlayerSelection())});
+  let toSend = roomManager.getGame(roomName).getAllPlayerSelection().map((playerSubmission) => {
+    return {cardIds: playerSubmission, cards: convertCardId(playerSubmission)};
+  });
+  nodeConstants.io.sockets.in(roomName).emit('sendWhiteCardSelections', {status: "success", msg: toSend});
 }
 
 module.exports = {startTurn, receiveWhiteCard};

@@ -46,7 +46,7 @@ class Game {
   getAllPlayerSelection() {
     let output = [];
     for (let player of this.players) {
-      output = output.concat(player.selection);
+      output.push(player.selection);
     }
     return output;
   }

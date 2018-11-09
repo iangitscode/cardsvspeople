@@ -1,5 +1,27 @@
 .game-component {
   width: 100%;
+
+  .top-row {
+    display: flex;
+    height: 600px;
+    width: 100%;
+    overflow: auto;
+
+    .white-card-submissions {
+      display: flex;
+      .player-submissions {
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        &:hover {
+          .card {
+            box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+          }
+        }
+      }
+    }
+  }
+
   .bottom-row {
     position: absolute;
     bottom: 0px;
@@ -10,6 +32,22 @@
       display: flex;
       justify-content: center;
       flex-basis: 90%;
+
+      &.interactable-hand {
+        .card {
+          &.white {
+            cursor: pointer;
+            transition: transform 0.3s;
+            &:hover {
+              transform: translateY(-50px);
+            }
+            &.selected {
+              transform: translateY(-50px);
+              background-color: #CCCCCC;
+            }
+          }
+        }
+      }
     }
 
     .submit {
@@ -19,6 +57,7 @@
       cursor: pointer;
     }
   }
+
   .card {
     border: 1px solid black;
     border-radius: 5px;
@@ -26,7 +65,7 @@
     font-weight: bold;
     font-size: 20px;
     height: 300px;
-    width: 12%;
+    width: 180px;
     margin: 10px;
     padding: 7px;
 
@@ -38,17 +77,6 @@
     &.white {
       color: black;
       background-color: white;
-      cursor: pointer;
-
-      transition: transform 0.3s;
-      &.selected {
-        transform: translateY(-50px);
-        background-color: #CCCCCC;
-      }
-
-      &:hover {
-        transform: translateY(-50px);
-      }
     }
   }
 }

@@ -1,9 +1,24 @@
 <div class="game-component">
-  <div class="card black">
-    {{getCurrentBlackCardText() | async}}
+  <div class="top-row">
+    <div class="card black">
+      {{getCurrentBlackCardText() | async}}
+    </div>
+
+    <div class="white-card-submissions">
+      <div class="player-submissions"
+          *ngFor="let playerSubmission of (getWhiteCardSubmissions() | async); index as i"
+          (click)="selectSubmission(i)">
+          <div class="card white submitted"
+              *ngFor="let card of playerSubmission">
+            {{card.text}}      
+          </div>
+      </div>
+    </div>
   </div>
+
   <div class="bottom-row">
-    <div class="hand-container">
+    <div class="hand-container"
+         [class.interactable-hand] = "!(isMyTurnObservable() | async)">
       <div class="card white" 
           *ngFor="let card of getHand() | async; index as i"
           (click)="clickCard(i)"
@@ -11,9 +26,12 @@
         {{card.text}}
       </div>
     </div>
+
     <div class="submit" 
-        (click)="sendSelectedWhiteCard()">
+        (click)="sendSelectedWhiteCard()"
+        *ngIf="!(isMyTurnObservable() | async)">
         Submit
     </div>
   </div>
+
 </div>
