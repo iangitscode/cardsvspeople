@@ -7,7 +7,7 @@ class Game {
     this.blackCardsUsed = new Set();
     this.currentPlayerTurn = 0;
     this.currentState;
-    this.currentExpectedCards;
+    this.numExpectedCards;
     this.leaderId = "";
   }
 
@@ -49,6 +49,10 @@ class Game {
       output.push(player.selection);
     }
     return output;
+  }
+
+  incrementTurn() {
+    this.currentPlayerTurn = (++this.currentPlayerTurn)%this.players.length;
   }
 }
 

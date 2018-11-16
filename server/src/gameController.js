@@ -30,8 +30,7 @@ function generateCard(isWhiteCard, roomName) {
     let cardNum = Math.floor(Math.random() * numCards);
     while ( roomManager.getGame(roomName).blackCardsUsed.has(cardNum) ||
             cardsJSON.black[cardNum].text.includes('\n') ||
-            cardsJSON.black[cardNum].text.includes('*')
-            || cardsJSON.black[cardNum].pick != 3) {
+            cardsJSON.black[cardNum].text.includes('*')) {
       cardNum = Math.floor(Math.random() * numCards);
     }
     roomManager.getGame(roomName).blackCardsUsed.add(cardNum);
@@ -52,31 +51,49 @@ function emitCurrentPlayerTurn(roomName) {
   }
 }
 
+function startTurnSetup(roomName) {
+  roomManager.getGame(roomName).players.forEach((player, key) => {
+    while (player.hand.length < MAX_CARDS_IN_HAND) {
+      player.hand.push(generateCard(true, roomName));
+    }
+
+    player.selection = [];
+
+    nodeConstants.io.to(player.socketId).emit('setHand', {status: "success", msg: convertCardId(player.hand)});
+  });
+}
+
 function startTurn(playerId, roomName) {
     if (roomManager.isValidRoomName(roomName)) {
-      roomManager.getGame(roomName).players.forEach((value, key) => {
-        for (let i = 0; i < MAX_CARDS_IN_HAND; i++) {
-          value.hand.push(generateCard(true, roomName));
-        }
-        nodeConstants.io.to(value.socketId).emit('setHand', {status: "success", msg: convertCardId(value.hand)});
-      });
-
+      startTurnSetup(roomName);
       const blackCard = generateCard(false, roomName);
       nodeConstants.io.sockets.in(roomName).emit('setBlackCard', {status: "success", msg: {card: cardsJSON.black[blackCard]}});
       emitCurrentPlayerTurn(roomName);
       roomManager.getGame(roomName).currentState = state.SUBMIT;
-      roomManager.getGame(roomName).currentExpectedCards = cardsJSON.black[blackCard].pick;
+      roomManager.getGame(roomName).numExpectedCards = cardsJSON.black[blackCard].pick;
   }
 }
 
-function receiveWhiteCard(selection, playerId, roomName) {
+function receiveWhiteCardSelection(selection, playerId, roomName) {
   if (roomManager.isValidPlayerInRoom(playerId, roomName) && 
-      roomManager.getGame(roomName).playerIndexFromPlayerId(playerId) != roomManager.getGame(roomName).currentPlayerTurn &&
+      roomManager.getCurrentTurnPlayer(roomName).id != playerId &&
       roomManager.getGame(roomName).getPlayer(playerId).selection.length == 0 &&
-      selection.length == roomManager.getGame(roomName).currentExpectedCards) {
+      selection.length == roomManager.getGame(roomName).numExpectedCards) {
+    
+    // Put the specified cards in the selection
     roomManager.getGame(roomName).getPlayer(playerId).selection = selection.map((index) => {
       return roomManager.getGame(roomName).getPlayer(playerId).hand[index];
     });
+
+    // Removed the cards from the player's hand
+    for (let index of selection) {
+      roomManager.getGame(roomName).getPlayer(playerId).hand.splice(index, 1);  
+    }
+
+    // Update that player's hand
+    player = roomManager.getGame(roomName).getPlayer(playerId);
+    nodeConstants.io.to(player.socketId).emit('setHand', {status: "success", msg: convertCardId(player.hand)});
+
     if (roomManager.getGame(roomName).numPlayersWithSelection() == roomManager.getGame(roomName).players.length - 1) {
       startWinnerSelection(roomName);
     }
@@ -91,4 +108,20 @@ function startWinnerSelection(roomName) {
   nodeConstants.io.sockets.in(roomName).emit('sendWhiteCardSelections', {status: "success", msg: toSend});
 }
 
-module.exports = {startTurn, receiveWhiteCard};
+function selectWinner(winnerId, playerId, roomName) {
+  if(roomManager.isValidPlayerInRoom(playerId, roomName) &&
+     roomManager.getCurrentTurnPlayer(roomName).id == playerId) {
+    let player = roomManager.getGame(roomName).players[winnerId];
+    if (player != undefined) {
+      // TODO: Actually display winner
+      nodeConstants.io.sockets.in(roomName).emit('displayWinner', {status: "success", msg: player.selection})
+
+      roomManager.getGame(roomName).players[winnerId].points++;
+
+      roomManager.getGame(roomName).incrementTurn();
+      startTurn(roomManager.getCurrentTurnPlayer(roomName), roomName);
+    }
+  }
+}
+
+module.exports = {startTurn, receiveWhiteCardSelection, selectWinner};

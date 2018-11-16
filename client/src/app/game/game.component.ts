@@ -4,6 +4,7 @@ import { Card } from './card';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { map } from "rxjs/operators";
 import { Globals } from "../globals";
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'game',
@@ -38,6 +39,9 @@ export class GameComponent {
       if (data.status == 'success') {
         this.currentBlackCard.next(new Card(data.msg.card));
         this.numSpaces.next(data.msg.card.pick);
+
+        // When we receive a black card, a new turn has been started, so remove previous submissions
+        this.whiteCardSubmissions.next([]);
       }
     });
 
@@ -95,6 +99,6 @@ export class GameComponent {
   }
 
   public selectSubmission(index: number): void {
-    console.log(index);
+    this.socketService.getSocket().emit('selectWinner', index, this.globals.playerId, this.globals.roomName);
   }
 }

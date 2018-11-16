@@ -62,7 +62,11 @@ nodeConstants.io.on('connection', function(socket) {
 	});
 
 	socket.on('sendWhiteCard', (selection, playerId, roomName) => {
-		gameController.receiveWhiteCard(selection, playerId, roomName);
+		gameController.receiveWhiteCardSelection(selection, playerId, roomName);
+	});
+
+	socket.on('selectWinner', (winningId, playerId, roomName) => {
+		gameController.selectWinner(winningId, playerId, roomName);
 	});
 
 	socket.emit('hi',"Connected!");
