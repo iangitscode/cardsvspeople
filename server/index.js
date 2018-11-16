@@ -41,7 +41,7 @@ nodeConstants.io.on('connection', function(socket) {
 
 			// Say hi to everyone!
 			nodeConstants.io.sockets.in(roomName).emit("saysomething", "hello everyone");
-			
+
 		} else {
 			respond({status: "error", msg: "Wrong room"});
 		}

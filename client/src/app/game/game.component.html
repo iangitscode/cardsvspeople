@@ -12,10 +12,10 @@
          (cdkDropListDropped)="drop($event)"
          id="selections"
          cdkDropListOrientation="horizontal">
-
        <div class="white-card-selection card white"
             *ngFor="let card of (getSelectedCards() | async)"
             cdkDrag>
+          <div class="custom-placeholder" *cdkDragPlaceholder></div>
           {{card.text}}
        </div>
     </div>
@@ -44,6 +44,7 @@
       <div class="card white" 
           *ngFor="let card of getHand() | async; index as i"
           cdkDrag>
+        <div class="custom-placeholder" *cdkDragPlaceholder></div>
         {{card.text}}
       </div>
     </div>

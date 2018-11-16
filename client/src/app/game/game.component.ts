@@ -152,7 +152,7 @@ export class GameComponent {
         let newHand = this.hand.value;
 
         // Add card to hand
-        newHand.push(removed);
+        newHand.splice(event.currentIndex, 0, removed);
 
         // Emit the new sets
         this.selectedCards.next(newSelections);

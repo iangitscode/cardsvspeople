@@ -7,6 +7,7 @@ import * as io from 'socket.io-client';
 export class SocketService {
   private socket:SocketIOClient.Socket;
   constructor() { 
+    // TODO: Change this to hosting ip address
     this.socket = io('http://localhost:3000');
   }
   public getSocket():SocketIOClient.Socket {
