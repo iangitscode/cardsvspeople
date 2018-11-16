@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { SocketService } from '../socket-service/socket-service';
 import { Card } from './card';
-import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
+import { ReplaySubject, BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { startWith } from 'rxjs/operators'
 import { map } from "rxjs/operators";
 import { Globals } from "../globals";
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -21,7 +22,11 @@ export class GameComponent {
   }));
   private whiteCardSubmissions: BehaviorSubject<Card[][]> = new BehaviorSubject<Card[][]>([]);
 
-  private selectedCards = []
+  private selectedCards: BehaviorSubject<Card[]> = new BehaviorSubject<Card[]>([]);
+
+  private canSelectMoreCards: Observable<boolean> = combineLatest(this.isMyTurn, this.numSpaces, this.selectedCards).pipe(map(([isMyTurn, numSpaces, selectedCards]) => {
+    return !isMyTurn && selectedCards.length < numSpaces;
+  })).pipe(startWith(false));
 
   constructor(private socketService: SocketService,
               private globals: Globals){}
@@ -29,8 +34,8 @@ export class GameComponent {
   ngOnInit() {
     this.socketService.getSocket().on('setHand', (data) => {
       if (data.status == 'success') {
-        this.hand.next(data.msg.map((cardJSON) => {
-          return new Card(cardJSON);
+        this.hand.next(data.msg.map((cardJSON, index) => {
+          return new Card(cardJSON, index);
         }));
       }
     });
@@ -41,6 +46,7 @@ export class GameComponent {
         this.numSpaces.next(data.msg.card.pick);
 
         // When we receive a black card, a new turn has been started, so remove previous submissions
+        // TODO: Clean up new turn emissions
         this.whiteCardSubmissions.next([]);
       }
     });
@@ -60,6 +66,13 @@ export class GameComponent {
         this.isMyTurn.next(data.msg);
       }
     });
+
+
+
+    this.selectedCards.subscribe((x)=> {
+      console.log(x)
+      console.log("WHATUP");
+    });
   }
 
   public getHand(): Observable<Card[]> {
@@ -70,35 +83,99 @@ export class GameComponent {
     return this.currentBlackCardText;
   }
 
-  public clickCard(index: number): void {
-    if (this.selectedCards.includes(index) && this.isMyTurn.value == false) {
-       // Remove the card from selectedCards
-       this.selectedCards.splice(this.selectedCards.indexOf(index), 1);
-    } else if (this.selectedCards.length == this.numSpaces.value) {
-      this.selectedCards = [index];
-    } else {
-      this.selectedCards.push(index);
-    }
-  }
-
-  public cardIsSelected(index: number): boolean {
-    return this.selectedCards.includes(index);
-  }
-
   public sendSelectedWhiteCard(): void {
-    this.socketService.getSocket().emit('sendWhiteCard', this.selectedCards, this.globals.playerId, this.globals.roomName);
-    this.selectedCards = [];
+    let selectedIndexes: number[] = this.selectedCards.value.map((card: Card) => {
+      return card.index;
+    });
+    this.socketService.getSocket().emit('sendWhiteCard', selectedIndexes, this.globals.playerId, this.globals.roomName);
+    this.selectedCards.next([])
   }
 
   public isMyTurnObservable(): Observable<boolean> {
     return this.isMyTurn;
   }
 
+  public getSelectedCards(): Observable<Card[]> {
+    return this.selectedCards;
+  }
+
   public getWhiteCardSubmissions(): Observable<Card[][]> {
     return this.whiteCardSubmissions;
   }
 
+  public getCanSelectMoreCards(): Observable<boolean> {
+    return this.canSelectMoreCards;
+  }
+
   public selectSubmission(index: number): void {
     this.socketService.getSocket().emit('selectWinner', index, this.globals.playerId, this.globals.roomName);
+  }
+
+  public drop(event: CdkDragDrop<Card[]>): void {
+    if (event.previousContainer === event.container) {
+      // Big hax to only allow self moving within selection container
+      if (event.previousContainer.element.nativeElement.id === "selections") {
+        // Previous selected cards
+        let newSelections = this.selectedCards.value;
+
+        // Remove element from old position
+        let removed = newSelections.splice(event.previousIndex, 1)[0];
+
+        // Put it in new position
+        newSelections.splice(event.currentIndex, 0, removed);
+
+        // Emit the new sets
+        this.selectedCards.next(newSelections);
+      } else {
+        // Previous hand
+        let newHand = this.hand.value;
+
+        // Remove element from old position
+        let removed = newHand.splice(event.previousIndex, 1)[0];
+
+        // Put it in new position
+        newHand.splice(event.currentIndex, 0, removed);
+
+        // Emit the new sets
+        this.hand.next(newHand);
+      }
+    } else {
+      // If going from selections to hand
+      if (event.previousContainer.element.nativeElement.id === "selections") {
+        // Previous selected cards
+        let newSelections = this.selectedCards.value;
+
+        // Remove element from old position
+        let removed = newSelections.splice(event.previousIndex, 1)[0]
+
+        // Previous hand
+        let newHand = this.hand.value;
+
+        // Add card to hand
+        newHand.push(removed);
+
+        // Emit the new sets
+        this.selectedCards.next(newSelections);
+        this.hand.next(newHand);
+      } else {
+        // Going from hand to selections
+
+        // Previous hand
+        let newHand = this.hand.value;
+
+        // Remove element from old position
+        let removed = newHand.splice(event.previousIndex, 1)[0]
+
+        // Previous selected cards
+        let newSelections = this.selectedCards.value;
+
+        // Add card to selected cards
+        newSelections.splice(event.currentIndex, 0, removed);
+
+        // Emit the new sets
+        this.selectedCards.next(newSelections);
+        this.hand.next(newHand);
+      }
+    }
   }
 }

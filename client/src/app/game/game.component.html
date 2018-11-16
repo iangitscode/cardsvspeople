@@ -4,6 +4,22 @@
       {{getCurrentBlackCardText() | async}}
     </div>
 
+    <div class="white-card-selection-container"
+         cdkDropList
+         #selections="cdkDropList"
+         [cdkDropListData]="getSelectedCards() | async"
+         [cdkDropListConnectedTo]="[hand]"
+         (cdkDropListDropped)="drop($event)"
+         id="selections"
+         cdkDropListOrientation="horizontal">
+
+       <div class="white-card-selection card white"
+            *ngFor="let card of (getSelectedCards() | async)"
+            cdkDrag>
+          {{card.text}}
+       </div>
+    </div>
+
     <div class="white-card-submissions">
       <div class="player-submissions"
           *ngFor="let playerSubmission of (getWhiteCardSubmissions() | async); index as i"
@@ -18,11 +34,16 @@
 
   <div class="bottom-row">
     <div class="hand-container"
-         [class.interactable-hand] = "!(isMyTurnObservable() | async)">
+         [class.can-drag]="getCanSelectMoreCards() | async"
+         cdkDropList
+         #hand="cdkDropList"
+         [cdkDropListData]="getHand() | async"
+         [cdkDropListConnectedTo]="[selections]"
+         (cdkDropListDropped)="drop($event)"
+         cdkDropListOrientation="horizontal">
       <div class="card white" 
           *ngFor="let card of getHand() | async; index as i"
-          (click)="clickCard(i)"
-          [class.selected]="cardIsSelected(i)">
+          cdkDrag>
         {{card.text}}
       </div>
     </div>

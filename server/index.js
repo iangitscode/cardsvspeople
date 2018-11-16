@@ -36,8 +36,6 @@ nodeConstants.io.on('connection', function(socket) {
 			// Register as a player in the room
 			playerId = roomManager.createPlayerInRoom(roomName, socket.id);
 
-			console.log(roomManager.getGame(roomName));
-
 			// Send back a success status, let the client know their playerId roomName
 			respond({status: "success", msg: {roomName: roomName, playerId: playerId}})
 

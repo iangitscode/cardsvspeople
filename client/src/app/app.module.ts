@@ -6,6 +6,7 @@ import { LobbyComponent } from './lobby/lobby.component';
 import { FormsModule } from '@angular/forms';
 import { GameComponent } from './game/game.component';
 import { Globals } from './globals';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { Globals } from './globals';
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    DragDropModule
   ],
   providers: [SocketService, Globals],
   bootstrap: [AppComponent]

@@ -30,7 +30,8 @@ function generateCard(isWhiteCard, roomName) {
     let cardNum = Math.floor(Math.random() * numCards);
     while ( roomManager.getGame(roomName).blackCardsUsed.has(cardNum) ||
             cardsJSON.black[cardNum].text.includes('\n') ||
-            cardsJSON.black[cardNum].text.includes('*')) {
+            cardsJSON.black[cardNum].text.includes('*') ||
+            cardsJSON.black[cardNum].pick != 3) {
       cardNum = Math.floor(Math.random() * numCards);
     }
     roomManager.getGame(roomName).blackCardsUsed.add(cardNum);
@@ -79,16 +80,19 @@ function receiveWhiteCardSelection(selection, playerId, roomName) {
       roomManager.getCurrentTurnPlayer(roomName).id != playerId &&
       roomManager.getGame(roomName).getPlayer(playerId).selection.length == 0 &&
       selection.length == roomManager.getGame(roomName).numExpectedCards) {
-    
+    console.log("Received white card selection: ", selection);
     // Put the specified cards in the selection
     roomManager.getGame(roomName).getPlayer(playerId).selection = selection.map((index) => {
       return roomManager.getGame(roomName).getPlayer(playerId).hand[index];
     });
 
+    console.log(roomManager.getGame(roomName).getPlayer(playerId).hand);
     // Removed the cards from the player's hand
-    for (let index of selection) {
-      roomManager.getGame(roomName).getPlayer(playerId).hand.splice(index, 1);  
-    }
+    roomManager.getGame(roomName).getPlayer(playerId).hand = 
+    roomManager.getGame(roomName).getPlayer(playerId).hand.filter((card, index) => {
+      return !selection.includes(index);
+    });
+    console.log(roomManager.getGame(roomName).getPlayer(playerId).hand);
 
     // Update that player's hand
     player = roomManager.getGame(roomName).getPlayer(playerId);
@@ -101,6 +105,7 @@ function receiveWhiteCardSelection(selection, playerId, roomName) {
 }
 
 function startWinnerSelection(roomName) {
+  console.log("Starting winner selection");
   roomManager.getGame(roomName).currentState = state.PICK;
   let toSend = roomManager.getGame(roomName).getAllPlayerSelection().map((playerSubmission) => {
     return {cardIds: playerSubmission, cards: convertCardId(playerSubmission)};
