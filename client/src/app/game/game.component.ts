@@ -25,6 +25,15 @@ export class GameComponent {
   private scores: BehaviorSubject<(string | number)[][]> = new BehaviorSubject<(string | number)[][]>([]);
   private thisTurnSubmitted: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+  // 0: Submitting cards
+  // 1: Picking from submissions
+  // 2: Viewing winning submission
+  private currentStage: number = 0;
+
+  private guidanceText: Observable<string> = this.isMyTurn.pipe(map((isMyTurn: boolean) => {
+    return isMyTurn ? "Wait for submissions!" : "Drag a card here!";
+  }));
+
   private canSelectMoreCards: Observable<boolean> = 
     combineLatest(this.isMyTurn, this.numSpaces, this.selectedCards, this.thisTurnSubmitted)
     .pipe(map(([isMyTurn, numSpaces, selectedCards, thisTurnSubmitted]) => {
@@ -67,8 +76,9 @@ export class GameComponent {
         // When we receive a black card, a new turn has been started, so remove previous submissions
         // TODO: Clean up new turn emissions
         this.whiteCardSubmissions.next([]);
-
         this.thisTurnSubmitted.next(false);
+
+        this.currentStage = 0;
       }
     });
 
@@ -79,6 +89,7 @@ export class GameComponent {
             return new Card(cardJSON);
           });
         }));
+        this.currentStage = 1;
       }
     });
 
@@ -215,5 +226,14 @@ export class GameComponent {
 
   public getSelectionBoxLength(): Observable<string> {
     return this.selectionBoxLength;
+  }
+
+  public isStageNumber(stage: number): boolean {
+    console.log(stage, this.currentStage);
+    return stage === this.currentStage;
+  }
+
+  public getGuidanceText(): Observable<string> {
+    return this.guidanceText;
   }
 }

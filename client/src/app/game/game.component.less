@@ -21,45 +21,74 @@
 
   .top-row {
     display: flex;
+    justify-content: flex-start;
     height: 600px;
     width: 100%;
     overflow: auto;
 
-    .white-card-selection-container {
-      min-width: @card-width + @card-margin * 2;
-      border: 1px solid black;
-      display: flex;
-      padding: 7px;
-      height: @card-height + @card-margin * 2;
+    .main-stage {
 
-      &.two {
-        width: @card-width * 2 + @card-margin * 4;
-      }
-
-      &.three {
-        width: @card-width * 3 + @card-margin * 6; 
-      }
-
-      &.four {
-        width: @card-width * 4 + @card-margin * 8;
-      }
-
-      &.five {
-        width: @card-width * 5 + @card-margin * 10;
-      }
-    }
-
-    .white-card-submissions {
-      display: flex;
-      .player-submissions {
-        cursor: pointer;
+      .white-card-selections {
+        min-width: @card-width + @card-margin * 2;
+        border: 1px solid black;
         display: flex;
-        flex-direction: column;
-        &:hover {
-          .card {
-            box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+        padding: 7px;
+        height: @card-height + @card-margin * 2;
+        align-items: center;
+
+        &.two {
+          width: @card-width * 2 + @card-margin * 4;
+        }
+
+        &.three {
+          width: @card-width * 3 + @card-margin * 6; 
+        }
+
+        &.four {
+          width: @card-width * 4 + @card-margin * 8;
+        }
+
+        &.five {
+          width: @card-width * 5 + @card-margin * 10;
+        }
+
+        .white-card-selection {
+          cursor: grab;
+        }
+
+        .guidance-text {
+          display: none;
+          font-style: Roboto;
+          font-size: 30px;
+          width: 100%;
+          text-align: center;
+        }
+
+        .guidance-text:only-child {
+          display: block;
+        }
+      }
+
+      .white-card-submissions {
+        display: flex;
+        height: 100%;
+        .player-submissions {
+          display: flex;
+          flex-direction: column;
+
+          &.interactable {
+            cursor: pointer;
+            &:hover {
+              .card {
+                box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+              }
+            }
           }
         }
+      }
+
+      *.hidden {
+        display: none;
       }
     }
   }
@@ -103,7 +132,7 @@
   }
 
   .scores-container {
-    position: aboslute;
+    position: absolute;
     top: 0;
     right: 0;
 
@@ -115,6 +144,8 @@
     }
   }
 }
+
+
 
 .cdk-drag {
   transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
@@ -137,6 +168,6 @@
   background: #cccccc;
 }
 
-.white-card-selection-container.cdk-drop-list-dragging .white-card-selection:not(.cdk-drag-placeholder) {
+.white-card-selections.cdk-drop-list-dragging .white-card-selection:not(.cdk-drag-placeholder) {
   transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
 }

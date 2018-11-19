@@ -4,33 +4,47 @@
       {{getCurrentBlackCardText() | async}}
     </div>
 
-    <div class="white-card-selection-container"
-         [ngClass]="getSelectionBoxLength() | async"
-         cdkDropList
-         #selections="cdkDropList"
-         [cdkDropListData]="getSelectedCards() | async"
-         [cdkDropListConnectedTo]="[hand]"
-         (cdkDropListDropped)="drop($event)"
-         id="selections"
-         cdkDropListOrientation="horizontal">
-       <div class="white-card-selection card white"
-            *ngFor="let card of (getSelectedCards() | async)"
-            cdkDrag>
-          <div class="custom-placeholder" *cdkDragPlaceholder></div>
-          {{card.text}}
-       </div>
+    <div class="main-stage">
+
+      <div class="white-card-selections-container"
+           [class.hidden]="!(isStageNumber(0))">
+        <div class="white-card-selections"
+             [ngClass]="getSelectionBoxLength() | async"
+             cdkDropList
+             #selections="cdkDropList"
+             [cdkDropListData]="getSelectedCards() | async"
+             [cdkDropListConnectedTo]="[hand]"
+             (cdkDropListDropped)="drop($event)"
+             id="selections"
+             cdkDropListOrientation="horizontal">
+           <div class="white-card-selection card white"
+                *ngFor="let card of (getSelectedCards() | async)"
+                cdkDrag>
+              <div class="custom-placeholder" *cdkDragPlaceholder></div>
+              {{card.text}}
+           </div>
+           
+           <div class="guidance-text">
+            {{getGuidanceText() | async}}
+           </div>
+        </div>
+      </div>
+
+      <div class="white-card-submissions"
+           [class.hidden]="!(isStageNumber(1))">
+        <div class="player-submissions"
+             [class.interactable]="isMyTurnObservable() | async"
+             *ngFor="let playerSubmission of (getWhiteCardSubmissions() | async); index as i"
+             (click)="selectSubmission(i)">
+            <div class="card white submitted"
+                *ngFor="let card of playerSubmission">
+              {{card.text}}
+            </div>
+        </div>
+      </div>
+
     </div>
 
-    <div class="white-card-submissions">
-      <div class="player-submissions"
-          *ngFor="let playerSubmission of (getWhiteCardSubmissions() | async); index as i"
-          (click)="selectSubmission(i)">
-          <div class="card white submitted"
-              *ngFor="let card of playerSubmission">
-            {{card.text}}
-          </div>
-      </div>
-    </div>
   </div>
 
   <div class="bottom-row">
@@ -60,11 +74,12 @@
   <div class="scores-container">
     <div class="score"
          *ngFor="let score of (getScores() | async)">
-         <div class="name">
-          {{score[0]}}
-         </div>
-         <div class="points">
-          {{score[1]}}
-         </div>
+       <div class="name">
+        {{score[0]}}
+       </div>
+       <div class="points">
+        {{score[1]}}
+       </div>
+    </div>
   </div>
 </div>
