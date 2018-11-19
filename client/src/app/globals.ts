@@ -6,4 +6,5 @@ import { Injectable } from '@angular/core';
 export class Globals {
   public roomName: string;
   public playerId: string;
+  public playerName: string;
 }

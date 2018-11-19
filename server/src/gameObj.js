@@ -54,6 +54,12 @@ class Game {
   incrementTurn() {
     this.currentPlayerTurn = (++this.currentPlayerTurn)%this.players.length;
   }
+
+  getAllPlayerNames() {
+    return this.players.map((player) => {
+      return player.name;
+    });
+  }
 }
 
 class Player {
@@ -63,6 +69,7 @@ class Player {
     this.hand = [];
     this.points = 0;
     this.selection = [];
+    this.name = "Anonymous Player";
   }
 }
 

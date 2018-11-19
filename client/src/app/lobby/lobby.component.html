@@ -1,19 +1,42 @@
 <div class="lobby-component">
-  <div class="create-room button" (click)="createRoom()" *ngIf="!isInRoom()">
-    Create Room
-  </div>
-  <div class="join-room" *ngIf="!isInRoom()">
-    <form (submit)="joinRoom()">
-      <input [(ngModel)]="formInput" name="formInput">
-    </form>
-    <div class="join-room button" (click)="joinRoom()">
-      Join Room
+
+  <div class="pre-room" *ngIf="!isInRoom()">
+    <div class="create-room button" (click)="createRoom()">
+      Create Room
+    </div>
+    <div class="join-room">
+      <form (submit)="joinRoom()">
+        <input [(ngModel)]="formInput" name="formInput">
+      </form>
+      <div class="join-room button" (click)="joinRoom()">
+        Join Room
+      </div>
     </div>
   </div>
-  <div class="current-room" *ngIf="isInRoom()">
-    Welcome to room {{getRoomName()}}!
+
+  <div class="in-room" *ngIf="isInRoom()">
+    <div class="current-room">
+      Welcome to room {{getRoomName()}}!
+    </div>
+    <div class="start-game button" (click)="startGame()" *ngIf="createdRoom()">
+      Start Game
+    </div>
+
+    <div class="create-name">
+      <form (submit)="setName()">
+        <input [(ngModel)]="nameInput" name="nameInput">
+      </form>
+      <div class="create-name button" (click)="setName()">
+        Set Name
+      </div>
+    </div>
+
+    <div class="player-names">
+      <div class="player-name"
+           *ngFor="let name of (getPlayerNames() | async)">
+           {{name}}
+      </div>
+    </div>
   </div>
-  <div class="start-game button" (click)="startGame()" *ngIf="createdRoom()">
-    Start Game
-  </div>
+
 </div>

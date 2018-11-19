@@ -23,7 +23,7 @@ nodeConstants.io.on('connection', function(socket) {
 		respond({status: "success", msg: {roomName: roomName, playerId: playerId}});
 
 		// Say hi to everyone!
-		nodeConstants.io.sockets.in(roomName).emit("saysomething", "hello everyone");
+		nodeConstants.io.sockets.in(roomName).emit("updatePlayerNames", roomManager.getGame(roomName).getAllPlayerNames());
 	});
 	
 	socket.on('joinRoom', (roomName, respond) => {
@@ -40,7 +40,7 @@ nodeConstants.io.on('connection', function(socket) {
 			respond({status: "success", msg: {roomName: roomName, playerId: playerId}})
 
 			// Say hi to everyone!
-			nodeConstants.io.sockets.in(roomName).emit("saysomething", "hello everyone");
+			nodeConstants.io.sockets.in(roomName).emit("updatePlayerNames", roomManager.getGame(roomName).getAllPlayerNames());
 
 		} else {
 			respond({status: "error", msg: "Wrong room"});
@@ -59,15 +59,18 @@ nodeConstants.io.on('connection', function(socket) {
 		}
 	});
 
-	socket.on('sendWhiteCard', (selection, playerId, roomName) => {
-		gameController.receiveWhiteCardSelection(selection, playerId, roomName);
+	socket.on('sendWhiteCard', (selection, playerId, roomName, respond) => {
+		gameController.receiveWhiteCardSelection(selection, playerId, roomName, respond);
 	});
 
 	socket.on('selectWinner', (winningId, playerId, roomName) => {
 		gameController.selectWinner(winningId, playerId, roomName);
 	});
 
-	socket.emit('hi',"Connected!");
+	socket.on('setName', (playerId, roomName, playerName) => {
+		roomManager.setPlayerName(playerId, roomName, playerName);
+		nodeConstants.io.sockets.in(roomName).emit("updatePlayerNames", roomManager.getGame(roomName).getAllPlayerNames());
+	});
 });
 
 nodeConstants.server.listen(3000);

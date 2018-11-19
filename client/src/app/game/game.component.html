@@ -5,6 +5,7 @@
     </div>
 
     <div class="white-card-selection-container"
+         [ngClass]="getSelectionBoxLength() | async"
          cdkDropList
          #selections="cdkDropList"
          [cdkDropListData]="getSelectedCards() | async"
@@ -51,9 +52,19 @@
 
     <div class="submit" 
         (click)="sendSelectedWhiteCard()"
-        *ngIf="!(isMyTurnObservable() | async)">
+        *ngIf="!(isMyTurnObservable() | async) && !(getThisTurnSubmitted() | async)">
         Submit
     </div>
   </div>
 
+  <div class="scores-container">
+    <div class="score"
+         *ngFor="let score of (getScores() | async)">
+         <div class="name">
+          {{score[0]}}
+         </div>
+         <div class="points">
+          {{score[1]}}
+         </div>
+  </div>
 </div>

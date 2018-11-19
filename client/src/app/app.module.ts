@@ -22,4 +22,4 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
   providers: [SocketService, Globals],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

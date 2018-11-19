@@ -38,6 +38,7 @@ function createPlayerInRoom(roomName, socketId) {
   }
 
   let player = new objs.Player(playerId, socketId);
+
   games.get(roomName).players.push(player);
 
   // Add the id -> index mapping
@@ -75,4 +76,10 @@ function getCurrentTurnPlayer(roomName) {
   }
 }
 
-module.exports = {createNewRoom, createPlayerInRoom, games, isValidPlayerInRoom, getGame, getCurrentTurnPlayer, isValidRoomName};
+function setPlayerName(playerId, roomName, playerName) {
+  if (isValidPlayerInRoom(playerId, roomName) && playerName.length <= 16) {
+    getGame(roomName).getPlayer(playerId).name = playerName;
+  }
+}
+
+module.exports = {createNewRoom, createPlayerInRoom, games, isValidPlayerInRoom, getGame, getCurrentTurnPlayer, isValidRoomName, setPlayerName};

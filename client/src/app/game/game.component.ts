@@ -21,12 +21,31 @@ export class GameComponent {
     return card.text.replace(/_/g,"___");
   }));
   private whiteCardSubmissions: BehaviorSubject<Card[][]> = new BehaviorSubject<Card[][]>([]);
-
   private selectedCards: BehaviorSubject<Card[]> = new BehaviorSubject<Card[]>([]);
+  private scores: BehaviorSubject<(string | number)[][]> = new BehaviorSubject<(string | number)[][]>([]);
+  private thisTurnSubmitted: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  private canSelectMoreCards: Observable<boolean> = combineLatest(this.isMyTurn, this.numSpaces, this.selectedCards).pipe(map(([isMyTurn, numSpaces, selectedCards]) => {
-    return !isMyTurn && selectedCards.length < numSpaces;
-  })).pipe(startWith(false));
+  private canSelectMoreCards: Observable<boolean> = 
+    combineLatest(this.isMyTurn, this.numSpaces, this.selectedCards, this.thisTurnSubmitted)
+    .pipe(map(([isMyTurn, numSpaces, selectedCards, thisTurnSubmitted]) => {
+      return !thisTurnSubmitted && !isMyTurn && selectedCards.length < numSpaces;
+    })).pipe(startWith(false));
+
+  private selectionBoxLength: Observable<string> = this.numSpaces.pipe(map((numSpaces) => {
+    switch (numSpaces) {
+      case 1:
+        return "one";
+      case 2:
+        return "two";
+      case 3:
+        return "three";
+      // Probably won't get here
+      case 4:
+        return "four";
+      case 5:
+        return "five";
+    }
+  }));
 
   constructor(private socketService: SocketService,
               private globals: Globals){}
@@ -48,6 +67,8 @@ export class GameComponent {
         // When we receive a black card, a new turn has been started, so remove previous submissions
         // TODO: Clean up new turn emissions
         this.whiteCardSubmissions.next([]);
+
+        this.thisTurnSubmitted.next(false);
       }
     });
 
@@ -67,11 +88,11 @@ export class GameComponent {
       }
     });
 
-
-
-    this.selectedCards.subscribe((x)=> {
-      console.log(x)
-      console.log("WHATUP");
+    this.socketService.getSocket().on('setScores', (data) => {
+      console.log(data);
+      if (data.status == 'success') {
+        this.scores.next(data.msg);
+      }
     });
   }
 
@@ -87,8 +108,13 @@ export class GameComponent {
     let selectedIndexes: number[] = this.selectedCards.value.map((card: Card) => {
       return card.index;
     });
-    this.socketService.getSocket().emit('sendWhiteCard', selectedIndexes, this.globals.playerId, this.globals.roomName);
-    this.selectedCards.next([])
+    this.socketService.getSocket().emit('sendWhiteCard', selectedIndexes, this.globals.playerId, this.globals.roomName, (response) => {
+      console.log(response);
+      if (response.status == 'success') {
+        this.thisTurnSubmitted.next(true);
+        this.selectedCards.next([])
+      }
+    });
   }
 
   public isMyTurnObservable(): Observable<boolean> {
@@ -177,5 +203,17 @@ export class GameComponent {
         this.hand.next(newHand);
       }
     }
+  }
+
+  public getScores(): Observable<(string | number)[][]> {
+    return this.scores;
+  }
+
+  public getThisTurnSubmitted(): Observable<boolean> {
+    return this.thisTurnSubmitted;
+  }
+
+  public getSelectionBoxLength(): Observable<string> {
+    return this.selectionBoxLength;
   }
 }
