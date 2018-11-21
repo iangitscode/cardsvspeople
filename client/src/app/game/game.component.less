@@ -1,18 +1,20 @@
-@card-width: 180px;
-@card-height: 300px;
-@card-margin: 10px;
+@card-width: 11vw;
+@card-height: 26vh;
+@card-margin: 0.3vw;
+@card-font: 1vw;
+@card-padding: 0.3vw;
 
 .card() {
   border: 1px solid black;
   border-radius: 5px;
   font-family: Helvetica;
   font-weight: bold;
-  font-size: 20px;
+  font-size: @card-font;
   height: @card-height;
   width: @card-width;
   box-sizing: border-box;
   margin: @card-margin;
-  padding: 7px;
+  padding: @card-padding;
   word-wrap: break-word;
 }
 
@@ -32,12 +34,12 @@
         min-width: @card-width + @card-margin * 2;
         border: 1px solid black;
         display: flex;
-        padding: 7px;
-        height: @card-height + @card-margin * 2;
+        padding: @card-padding;
+        height: @card-height;
         align-items: center;
 
         &.two {
-          width: @card-width * 2 + @card-margin * 4;
+          width: @card-width * 2 + @card-margin * 4; 
         }
 
         &.three {
@@ -59,7 +61,7 @@
         .guidance-text {
           display: none;
           font-style: Roboto;
-          font-size: 30px;
+          font-size: @card-font * 2;
           width: 100%;
           text-align: center;
         }
@@ -75,6 +77,13 @@
         .player-submissions {
           display: flex;
           flex-direction: column;
+          max-height: @card-height * 2;
+          height: 100%;
+
+          .card {
+            min-height: 0;
+            flex: 1 1 0;
+          }
 
           &.interactable {
             cursor: pointer;

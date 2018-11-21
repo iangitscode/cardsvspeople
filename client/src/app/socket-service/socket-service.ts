@@ -8,7 +8,9 @@ export class SocketService {
   private socket:SocketIOClient.Socket;
   constructor() { 
     // TODO: Change this to hosting ip address
-    this.socket = io('http://localhost:3000');
+    // this.socket = io('http://localhost:3000');
+    this.socket = io('192.168.1.109:3000');
+    
   }
   public getSocket():SocketIOClient.Socket {
     return this.socket;
