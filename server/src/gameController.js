@@ -115,7 +115,7 @@ function receiveWhiteCardSelection(selection, playerId, roomName, respond) {
 function startWinnerSelection(roomName) {
   // console.log("Starting winner selection");
   roomManager.getGame(roomName).currentState = state.PICK;
-  let toSend = roomManager.getGame(roomName).getAllPlayerSelection().map((playerSubmission) => {
+  let toSend = roomManager.getGame(roomName).getShuffledPlayerSelection().map((playerSubmission) => {
     return {cardIds: playerSubmission, cards: convertCardId(playerSubmission)};
   });
   nodeConstants.io.sockets.in(roomName).emit('sendWhiteCardSelections', {status: "success", msg: toSend});
@@ -124,15 +124,19 @@ function startWinnerSelection(roomName) {
 function selectWinner(winnerId, playerId, roomName) {
   if(roomManager.isValidPlayerInRoom(playerId, roomName) &&
      roomManager.getCurrentTurnPlayer(roomName).id == playerId) {
-    let player = roomManager.getGame(roomName).players[winnerId];
+    let realId = roomManager.getGame(roomName).shuffledIDs[winnerId];
+    let player = roomManager.getGame(roomName).players[realId];
     if (player != undefined) {
-      // TODO: Actually display winner
-      nodeConstants.io.sockets.in(roomName).emit('displayWinner', {status: "success", msg: player.selection})
+      const name_index = [player.name, winnerId];
+      nodeConstants.io.sockets.in(roomName).emit('displayWinner', {status: "success", msg: name_index})
 
-      roomManager.getGame(roomName).players[winnerId].points++;
+      roomManager.getGame(roomName).players[realId].points++;
 
-      roomManager.getGame(roomName).incrementTurn();
-      startTurn(roomManager.getCurrentTurnPlayer(roomName), roomName);
+      // After displaying the winner, wait a bit, then move to next turn
+      setTimeout(() => {
+        roomManager.getGame(roomName).incrementTurn();
+        startTurn(roomManager.getCurrentTurnPlayer(roomName), roomName);  
+      }, 3000);
     }
   }
 }

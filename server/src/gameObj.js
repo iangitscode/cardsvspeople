@@ -9,6 +9,7 @@ class Game {
     this.currentState;
     this.numExpectedCards;
     this.leaderId = "";
+    this.shuffledIDs = [];
   }
 
   playerIndexFromPlayerId(playerId) {
@@ -43,10 +44,25 @@ class Game {
     return count;
   }
 
-  getAllPlayerSelection() {
+  getShuffledPlayerSelection() {
+    let shuffled = [];
+    const len = this.players.length;
+    for (let i = 0; i < len; i++) {
+      shuffled.push(i);
+    }
+    for (let i = 0; i < len; i++) {
+      let one = Math.floor(Math.random() * len);
+      let two = Math.floor(Math.random() * len);
+      let temp = shuffled[one];
+      shuffled[one] = shuffled[two];
+      shuffled[two] = temp;
+    }
+
+    this.shuffledIDs = shuffled;
+
     let output = [];
-    for (let player of this.players) {
-      output.push(player.selection);
+    for (let id of shuffled) {
+      output.push(this.players[id].selection);
     }
     return output;
   }

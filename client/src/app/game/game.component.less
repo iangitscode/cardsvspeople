@@ -29,6 +29,7 @@
     overflow: auto;
 
     .main-stage {
+      overflow: hidden;
 
       .white-card-selections {
         min-width: @card-width + @card-margin * 2;
@@ -98,6 +99,12 @@
 
       *.hidden {
         display: none;
+      }
+
+      .submitter-name {
+        font-size: @card-font;
+        text-align: center;
+        font-weight: bold;
       }
     }
   }

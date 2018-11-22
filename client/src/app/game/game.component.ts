@@ -24,6 +24,7 @@ export class GameComponent {
   private selectedCards: BehaviorSubject<Card[]> = new BehaviorSubject<Card[]>([]);
   private scores: BehaviorSubject<(string | number)[][]> = new BehaviorSubject<(string | number)[][]>([]);
   private thisTurnSubmitted: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private winnerName: BehaviorSubject<string> = new BehaviorSubject<string>("");
 
   // 0: Submitting cards
   // 1: Picking from submissions
@@ -72,12 +73,11 @@ export class GameComponent {
       if (data.status == 'success') {
         this.currentBlackCard.next(new Card(data.msg.card));
         this.numSpaces.next(data.msg.card.pick);
-
         // When we receive a black card, a new turn has been started, so remove previous submissions
         // TODO: Clean up new turn emissions
         this.whiteCardSubmissions.next([]);
+        this.winnerName.next("");
         this.thisTurnSubmitted.next(false);
-
         this.currentStage = 0;
       }
     });
@@ -100,9 +100,15 @@ export class GameComponent {
     });
 
     this.socketService.getSocket().on('setScores', (data) => {
-      console.log(data);
       if (data.status == 'success') {
         this.scores.next(data.msg);
+      }
+    });
+
+    this.socketService.getSocket().on('displayWinner', (data) => {
+      if (data.status == 'success') {
+        this.winnerName.next(data.msg[0])
+        this.whiteCardSubmissions.next([this.whiteCardSubmissions.value[data.msg[1]]]);
       }
     });
   }
@@ -120,7 +126,6 @@ export class GameComponent {
       return card.index;
     });
     this.socketService.getSocket().emit('sendWhiteCard', selectedIndexes, this.globals.playerId, this.globals.roomName, (response) => {
-      console.log(response);
       if (response.status == 'success') {
         this.thisTurnSubmitted.next(true);
         this.selectedCards.next([])
@@ -229,11 +234,14 @@ export class GameComponent {
   }
 
   public isStageNumber(stage: number): boolean {
-    console.log(stage, this.currentStage);
     return stage === this.currentStage;
   }
 
   public getGuidanceText(): Observable<string> {
     return this.guidanceText;
+  }
+
+  public getWinnerName(): Observable<string> {
+    return this.winnerName;
   }
 }

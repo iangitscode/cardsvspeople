@@ -30,6 +30,10 @@
         </div>
       </div>
 
+      <div class="submitter-name">
+        {{getWinnerName() | async}}
+      </div>
+
       <div class="white-card-submissions"
            [class.hidden]="!(isStageNumber(1))">
         <div class="player-submissions"
