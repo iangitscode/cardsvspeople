@@ -1,4 +1,4 @@
-const cardsJSON = require('./cards.json')
+const cardsJSON = require('./baseCards.json')
 const roomManager = require('./rooms.js');
 const MAX_CARDS_IN_HAND = 7;
 const nodeConstants = require('../nodeConstants.js');
@@ -30,8 +30,7 @@ function generateCard(isWhiteCard, roomName) {
     let cardNum = Math.floor(Math.random() * numCards);
     while ( roomManager.getGame(roomName).blackCardsUsed.has(cardNum) ||
             cardsJSON.black[cardNum].text.includes('\n') ||
-            cardsJSON.black[cardNum].text.includes('*') || 
-            cardsJSON.black[cardNum].pick !== 3) {
+            cardsJSON.black[cardNum].text.includes('*')) {
       cardNum = Math.floor(Math.random() * numCards);
     }
     roomManager.getGame(roomName).blackCardsUsed.add(cardNum);

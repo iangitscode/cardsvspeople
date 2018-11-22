@@ -1,40 +1,46 @@
 <div class="lobby-component">
 
-  <div class="pre-room" *ngIf="!isInRoom()">
-    <div class="create-room button" (click)="createRoom()">
-      Create Room
-    </div>
-    <div class="join-room">
-      <form (submit)="joinRoom()">
-        <input [(ngModel)]="formInput" name="formInput">
-      </form>
-      <div class="join-room button" (click)="joinRoom()">
-        Join Room
-      </div>
-    </div>
+  <div class="title"> 
+    <div class="not"> (Not) </div> Cards Against Humanity
   </div>
 
-  <div class="in-room" *ngIf="isInRoom()">
-    <div class="current-room">
-      Welcome to room {{getRoomName()}}!
-    </div>
-    <div class="start-game button" (click)="startGame()" *ngIf="createdRoom()">
-      Start Game
-    </div>
-
-    <div class="create-name">
-      <form (submit)="setName()">
-        <input [(ngModel)]="nameInput" name="nameInput">
-      </form>
-      <div class="create-name button" (click)="setName()">
-        Set Name
+  <div class="main-box">
+    <div class="pre-room" *ngIf="!isInRoom()">
+      <div class="create-room" (click)="createRoom()">
+        Create Room
+      </div>
+      <div class="join-room">
+        <form (submit)="joinRoom()">
+          <input [(ngModel)]="formInput" name="formInput" class="join-room-input">
+        </form>
+        <div class="join-room-button" (click)="joinRoom()">
+          Join Room
+        </div>
       </div>
     </div>
 
-    <div class="player-names">
-      <div class="player-name"
-           *ngFor="let name of (getPlayerNames() | async)">
-           {{name}}
+    <div class="in-room" *ngIf="isInRoom()">
+      <div class="current-room">
+        Welcome to room {{getRoomName()}}!
+      </div>
+      <div class="start-game" (click)="startGame()" *ngIf="createdRoom()">
+        Start Game
+      </div>
+
+      <div class="create-name">
+        <form (submit)="setName()">
+          <input [(ngModel)]="nameInput" name="nameInput" class="create-name-input">
+        </form>
+        <div class="create-name-button" (click)="setName()">
+          Set Name
+        </div>
+      </div>
+
+      <div class="player-names">
+        <div class="player-name"
+             *ngFor="let name of (getPlayerNames() | async)">
+             {{name}}
+        </div>
       </div>
     </div>
   </div>

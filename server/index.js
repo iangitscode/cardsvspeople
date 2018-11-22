@@ -28,6 +28,8 @@ nodeConstants.io.on('connection', function(socket) {
 	
 	socket.on('joinRoom', (roomName, respond) => {
 		// Make sure the roomName exists
+		roomName = roomName.toLowerCase();
+		
 		if (roomManager.games.has(roomName)) {
 
 			// Join the room
