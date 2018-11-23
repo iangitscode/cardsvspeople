@@ -6,8 +6,9 @@ import * as io from 'socket.io-client';
 })
 export class SocketService {
   private socket:SocketIOClient.Socket;
-  constructor() { 
+  constructor() {
     // TODO: Fix this
+     // this.socket = io.connect("localhost:9001");
      this.socket = io.connect(window.location.host);
   }
   public getSocket():SocketIOClient.Socket {
