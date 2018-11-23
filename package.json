@@ -8,5 +8,8 @@
     "postinstall": "cd client && npm install && ng build --aot --prod"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "engines": {
+    "node": "11.x"
+  }
 }

@@ -2,7 +2,8 @@ const nodeConstants = require('./nodeConstants.js');
 const roomManager = require('./src/rooms.js');
 const gameController = require('./src/gameController.js');
 
-nodeConstants.app.use(nodeConstants.serve('../client/public_html'));
+// nodeConstants.app.use(nodeConstants.serve('../client/public_html'));
+nodeConstants.app.use(nodeConstants.serve('../client/dist/cah/'));
 
 nodeConstants.io.on('connection', function(socket) {
 
@@ -75,4 +76,5 @@ nodeConstants.io.on('connection', function(socket) {
 	});
 });
 
-nodeConstants.server.listen(3000);
+nodeConstants.server.listen(9001);
+console.log("Server listening on port 9001");
