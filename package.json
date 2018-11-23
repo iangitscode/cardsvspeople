@@ -4,7 +4,8 @@
   "description": "A (completely unlicensed but probably legal) clone of Cards Against Humanity!",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "cd server && node index.js",
+    "postinstall": "cd client && ng build --aot -prod"
   },
   "author": "",
   "license": "ISC",
