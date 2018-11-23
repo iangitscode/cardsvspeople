@@ -76,5 +76,5 @@ nodeConstants.io.on('connection', function(socket) {
 	});
 });
 
-nodeConstants.server.listen(9001);
+nodeConstants.server.listen(process.env.PORT || 9001);
 console.log("Server listening on port 9001");
