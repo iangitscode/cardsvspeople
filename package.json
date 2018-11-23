@@ -4,13 +4,18 @@
   "description": "A (completely unlicensed but probably legal) clone of Cards Against Humanity!",
   "main": "index.js",
   "scripts": {
-    "start": "cd server && npm install && node index.js",
-    "postinstall": "cd client && npm install && ng build --aot --prod"
+    "start": "cd server && node index.js",
+    "postinstall": "cd client && ng build --aot --prod"
   },
   "author": "",
   "license": "ISC",
   "engines": {
     "node": "11.x",
     "npm": "6.4.x"
+  },
+  "dependencies": {
+    "@angular/cli": "~7.0.4",
+    "@angular/compiler-cli": "~7.0.0",
+    "typescript": "~3.1.1"
   }
 }
