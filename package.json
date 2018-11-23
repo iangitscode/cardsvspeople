@@ -33,6 +33,9 @@
     "rxjs": "~6.3.3",
     "socket.io": "^2.1.1",
     "zone.js": "~0.8.26",
-    "typescript": "~3.1.1"
+    "typescript": "~3.1.1",
+    "koa": "^2.5.3",
+    "koa-static": "^5.0.0",
+    "socket.io": "^2.1.1"
   }
 }
