@@ -79,13 +79,13 @@ class Game {
 }
 
 class Player {
-  constructor(id, socketId) {
+  constructor(id, socketId, name) {
     this.id = id;
     this.socketId = socketId;
     this.hand = [];
     this.points = 0;
     this.selection = [];
-    this.name = "Anonymous Player";
+    this.name = name;
   }
 }
 

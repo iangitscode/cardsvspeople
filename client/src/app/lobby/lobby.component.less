@@ -1,23 +1,29 @@
-@button-height: 64px;
-@font-size: 32px;
+@button-height: 32px;
+@font-size: 16px;
 
 .button() {
-    display: inline-block;
-    border: 2px solid black;
-    padding: 5px;
-    border-radius: 3px;
-    cursor: pointer;
-    height: @button-height;
-    box-sizing: border-box;
-    font-size: @font-size;
+  display: inline-block;
+  border: 2px solid black;
+  padding: 5px;
+  border-radius: 3px;
+  cursor: pointer;
+  height: @button-height;
+  box-sizing: border-box;
+  font-size: @font-size;
+  &.unclickable {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .input() {
   height: @button-height;
   font-size: @font-size;
-  width: 4em;
+  width: 128px;
   box-sizing: border-box;
-  text-align: center;
+  &.invalid-input {
+    border: 1px solid #ff3333;
+  }
 }
 
 .lobby-component {
@@ -29,10 +35,11 @@
   height: 100%;
 
   .title {
-    .not {
-      display: inline-block;
+    &::before {
+      content: "(Not)";
+      display: block;
       font-size: @font-size;
-      transform: rotate(-30deg) translate(30px, -20px);
+      transform: rotate(-30deg) translate(-7px, -90px);
     }
     font-family: Helvetica;
     font-weight: bold;
@@ -41,10 +48,11 @@
   }
 
   .main-box {
-    width: 40%;
-    height: 40%;
+    width: 20%;
+    height: 20%;
     border: 1px solid black;
     border-radius: 3px;
+    box-shadow: 0 6px 15px 0 rgba(0, 0, 0, 0.4), 0 6px 15px 0 rgba(0, 0, 0, 0.4);
 
     & > *{
       height: 100%;
@@ -52,10 +60,20 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-around;
     }
 
     .pre-room {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+
+      .create-name {
+        display: flex;
+        .create-name-input {
+          .input();
+        }
+      }
+
       .create-room {
         .button();
       }
@@ -70,23 +88,22 @@
           .button();
         }
       }
-
     }
 
     .in-room {
-      .start-game {
-        .button();
-      }
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
 
-      .create-name {
-        display: flex;
-        .create-name-input {
-          .input();
-        }
-        .create-name-button {
-          .button();
-        }
+      .start-game {
+        align-self: flex-start;
+        .button();
       }
     }
   }
+}
+
+
+.weird {
+  display: flex;
 }

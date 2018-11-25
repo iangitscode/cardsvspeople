@@ -7,7 +7,12 @@ nodeConstants.app.use(nodeConstants.serve('../client/dist/cah/'));
 
 nodeConstants.io.on('connection', function(socket) {
 
-	socket.on('createRoom', (respond) => {
+	socket.on('createRoom', (playerName, respond) => {
+		if (playerName == undefined || playerName == null || playerName.length > 16) {
+			respond({status: "error", msg: "invalid_name"});
+			return;
+		}
+
 		// Create a new Game object
 		let roomName = roomManager.createNewRoom();
 
@@ -15,7 +20,7 @@ nodeConstants.io.on('connection', function(socket) {
 		socket.join(roomName);
 
 		// Create a new player in the Game
-		playerId = roomManager.createPlayerInRoom(roomName, socket.id);
+		playerId = roomManager.createPlayerInRoom(roomName, playerName, socket.id);
 
 		// Since this player created the Game, they are the leader
 		roomManager.getGame(roomName).leaderId = playerId;
@@ -27,7 +32,12 @@ nodeConstants.io.on('connection', function(socket) {
 		nodeConstants.io.sockets.in(roomName).emit("updatePlayerNames", roomManager.getGame(roomName).getAllPlayerNames());
 	});
 	
-	socket.on('joinRoom', (roomName, respond) => {
+	socket.on('joinRoom', (playerName, roomName, respond) => {
+		if (playerName == undefined || playerName == null || playerName.length > 16) {
+			respond({status: "error", msg: "invalid_name"});
+			return;
+		}
+
 		// Make sure the roomName exists
 		if (roomName !== undefined && roomName !== null) {
 			roomName = roomName.toLowerCase();	
@@ -39,7 +49,7 @@ nodeConstants.io.on('connection', function(socket) {
 			socket.join(roomName);
 
 			// Register as a player in the room
-			playerId = roomManager.createPlayerInRoom(roomName, socket.id);
+			playerId = roomManager.createPlayerInRoom(roomName, playerName, socket.id);
 
 			// Send back a success status, let the client know their playerId roomName
 			respond({status: "success", msg: {roomName: roomName, playerId: playerId}})
@@ -48,7 +58,7 @@ nodeConstants.io.on('connection', function(socket) {
 			nodeConstants.io.sockets.in(roomName).emit("updatePlayerNames", roomManager.getGame(roomName).getAllPlayerNames());
 
 		} else {
-			respond({status: "error", msg: "Wrong room"});
+			respond({status: "error", msg: "wrong_room"});
 		}
 	});
 

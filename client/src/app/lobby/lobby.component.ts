@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SocketService } from '../socket-service/socket-service';
 import { Globals } from '../globals';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-lobby',
@@ -9,10 +9,13 @@ import { Subject, Observable } from 'rxjs';
   styleUrls: ['./lobby.component.less']
 })
 export class LobbyComponent implements OnInit {
-  private formInput: string;
+  private roomNameInput: string;
   private nameInput: string;
   private roomCreator: boolean;
   private playerNames: Subject<string> = new Subject<string>();
+  private nameFieldIsEmpty: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  private invalidName: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private invalidRoomName: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private socketService: SocketService,
               private globals: Globals) {}
@@ -25,20 +28,43 @@ export class LobbyComponent implements OnInit {
   }
 
   public createRoom(): void {
-    this.socketService.getSocket().emit('createRoom', (response) => {
+    if (this.nameFieldIsEmpty.value == true) {
+      return;
+    }
+
+    this.globals.playerName = this.nameInput;
+
+    this.socketService.getSocket().emit('createRoom', this.globals.playerName, (response) => {
       if (response.status == "success") {
         this.globals.playerId = response.msg.playerId;
         this.globals.roomName = response.msg.roomName;
         this.roomCreator = true;
+      } else {
+        this.invalidName.next(true);
       }
     });
   }
 
   public joinRoom(): boolean {
-    this.socketService.getSocket().emit('joinRoom', this.formInput, (response) => {
+    if (this.nameFieldIsEmpty.value == true) {
+      return;
+    }
+
+    this.globals.playerName = this.nameInput;
+
+    this.socketService.getSocket().emit('joinRoom', this.globals.playerName, this.roomNameInput, (response) => {
       if (response.status == "success") {
         this.globals.playerId = response.msg.playerId;
         this.globals.roomName = response.msg.roomName;
+      } else {
+        if (response.msg == "invalid_name") {
+          this.invalidName.next(true);
+        } else if (response.msg == "wrong_room") {
+          this.invalidRoomName.next(true);
+
+          // If we're here, that means the name is okay
+          this.invalidRoomName.next(false);
+        }
       }
     });
     // Stop page reload on pressing Enter for form
@@ -61,14 +87,27 @@ export class LobbyComponent implements OnInit {
    return this.globals.roomName;
  }
 
- public setName(): void {
-   if (this.nameInput.length <= 16) {
-     this.globals.playerName = this.nameInput;
-     this.socketService.getSocket().emit('setName', this.globals.playerId, this.globals.roomName, this.globals.playerName);
-   }
- }
-
  public getPlayerNames(): Observable<string> {
    return this.playerNames;
+ }
+
+ public updateNameFieldIsEmpty(): void {
+   this.nameFieldIsEmpty.next(this.nameInput.length == 0);
+ }
+
+ public getNameFieldIsEmpty(): Observable<boolean> {
+   return this.nameFieldIsEmpty;
+ }
+
+ public getInvalidName(): Observable<boolean> {
+   return this.invalidName;
+ }
+
+ public getInvalidRoomName(): Observable<boolean> {
+   return this.invalidRoomName;
+ }
+
+ public getMyName(): string {
+   return this.globals.playerName;
  }
 }

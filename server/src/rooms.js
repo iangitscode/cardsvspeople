@@ -24,7 +24,7 @@ function createNewRoom() {
 /*
  * Creates a new player in specified room, and returns playerId
  */ 
-function createPlayerInRoom(roomName, socketId) {
+function createPlayerInRoom(roomName, playerName, socketId) {
   const playerIdLen = 10;
 
   if (isValidRoomName(roomName) == false) {
@@ -37,7 +37,7 @@ function createPlayerInRoom(roomName, socketId) {
     playerId = generateRandomAlpha(playerIdLen);
   }
 
-  let player = new objs.Player(playerId, socketId);
+  let player = new objs.Player(playerId, socketId, playerName);
 
   games.get(roomName).players.push(player);
 
