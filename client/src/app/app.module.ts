@@ -7,12 +7,14 @@ import { FormsModule } from '@angular/forms';
 import { GameComponent } from './game/game.component';
 import { Globals } from './globals';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ScoreBoardComponent } from './scoreboard/scoreboard.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LobbyComponent,
-    GameComponent
+    GameComponent,
+    ScoreBoardComponent
   ],
   imports: [
     BrowserModule,

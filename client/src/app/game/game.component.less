@@ -1,6 +1,5 @@
 @card-width: 11vw;
 @card-height: 26vh;
-@card-margin: 0.3vw;
 @card-font: 1vw;
 @card-padding: 0.3vw;
 
@@ -14,10 +13,9 @@
   font-size: @card-font;
   height: @card-height;
   width: @card-width;
-  max-height: @card-height;
-  max-width: @card-width;
+  max-height: @card-width * 1.5;
+  max-width: @card-height * 1.5;
   box-sizing: border-box;
-  margin: @card-margin;
   padding: @card-padding;
   word-wrap: break-word;
 }
@@ -36,27 +34,28 @@
       overflow: hidden;
 
       .white-card-selections {
-        min-width: @card-width + @card-margin * 2;
+        width: @card-width;
         border: 1px solid black;
         display: flex;
-        padding: @card-padding;
         height: @card-height;
+        max-height: @card-width * 1.5;
         align-items: center;
+        border-radius: 5px;
 
         &.two {
-          width: @card-width * 2 + @card-margin * 4; 
+          width: @card-width * 2;
         }
 
         &.three {
-          width: @card-width * 3 + @card-margin * 6; 
+          width: @card-width * 3;
         }
 
         &.four {
-          width: @card-width * 4 + @card-margin * 8;
+          width: @card-width * 4;
         }
 
         &.five {
-          width: @card-width * 5 + @card-margin * 10;
+          width: @card-width * 5;
         }
 
         .white-card-selection {
@@ -87,7 +86,6 @@
 
           .card {
             min-height: 0;
-            flex: 1 1 0;
           }
 
           &.interactable {
@@ -115,14 +113,16 @@
 
   .bottom-row {
     position: absolute;
-    bottom: 0px;
+    bottom: 10px;
     display: flex;
     align-items: flex-end;
+    width: 90%;
 
     .hand-container {
       display: flex;
-      flex-basis: 90%;
       pointer-events: none;
+      justify-content: space-between;
+      width: 100%;
 
       &.can-drag {
         pointer-events: all;
@@ -143,6 +143,7 @@
     &.black {
       color: white;
       background-color: black;
+      margin-right: 10px;
     }
 
     &.white {
@@ -151,29 +152,10 @@
     }
   }
 
-  .scores-container {
+  .scoreboard {
     position: absolute;
     top: 0;
     right: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    .score {
-      display: flex;
-      border: 1px solid black;
-      border-top: 0px;
-
-      padding: 3px;
-
-      &:first-child {
-        border-top: 1px solid black;
-      }
-
-      .name {
-        margin-right: 30px;
-      }
-    }
   }
 }
 

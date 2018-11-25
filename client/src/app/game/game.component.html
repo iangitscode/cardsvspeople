@@ -75,15 +75,5 @@
     </div>
   </div>
 
-  <div class="scores-container">
-    <div class="score"
-         *ngFor="let score of (getScores() | async)">
-       <div class="name">
-        {{score[0]}}
-       </div>
-       <div class="points">
-        {{score[1]}}
-       </div>
-    </div>
-  </div>
+  <scoreboard class="scoreboard"></scoreboard>
 </div>

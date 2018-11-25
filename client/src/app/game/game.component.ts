@@ -22,7 +22,6 @@ export class GameComponent {
   }));
   private whiteCardSubmissions: BehaviorSubject<Card[][]> = new BehaviorSubject<Card[][]>([]);
   private selectedCards: BehaviorSubject<Card[]> = new BehaviorSubject<Card[]>([]);
-  private scores: BehaviorSubject<(string | number)[][]> = new BehaviorSubject<(string | number)[][]>([]);
   private thisTurnSubmitted: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private winnerName: BehaviorSubject<string> = new BehaviorSubject<string>("");
 
@@ -96,12 +95,6 @@ export class GameComponent {
     this.socketService.getSocket().on('setIsMyTurn', (data) => {
       if (data.status == 'success') {
         this.isMyTurn.next(data.msg);
-      }
-    });
-
-    this.socketService.getSocket().on('setScores', (data) => {
-      if (data.status == 'success') {
-        this.scores.next(data.msg);
       }
     });
 
@@ -219,10 +212,6 @@ export class GameComponent {
         this.hand.next(newHand);
       }
     }
-  }
-
-  public getScores(): Observable<(string | number)[][]> {
-    return this.scores;
   }
 
   public getThisTurnSubmitted(): Observable<boolean> {
